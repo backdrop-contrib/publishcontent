@@ -1,6 +1,7 @@
 name = Publish Content Test Module
 description = "Provides a callback which lists all nodes with publish unpublish links for testing callbacks"
-core = 7.x
+backdrop = 1.x
+type = module
 package = Testing
 version = VERSION
 hidden = TRUE

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Views field handler providing a publish, unpublish link.
@@ -26,7 +25,10 @@ class publishcontent_views_handler_field_node_link extends views_handler_field_n
    */
   function option_definition() {
     $options = parent::option_definition();
-    $options['publish'] = $options['unpublish'] = array('default' => '', 'translatable' => TRUE);
+    $options['publish'] = $options['unpublish'] = array(
+      'default' => '',
+      'translatable' => TRUE,
+    );
     return $options;
   }
 
@@ -71,8 +73,8 @@ class publishcontent_views_handler_field_node_link extends views_handler_field_n
 
     if (isset($op)) {
       $this->options['alter']['make_link'] = TRUE;
-      $this->options['alter']['path'] = "node/$node->nid/$op/" . drupal_get_token();
-      $this->options['alter']['query'] = drupal_get_destination();
+      $this->options['alter']['path'] = "node/$node->nid/$op/" . backdrop_get_token();
+      $this->options['alter']['query'] = backdrop_get_destination();
       $this->options['alter']['link_class'] = $this->options['alter']['link_class'] . ' publishcontent-link publishcontent-' . $op;
 
       return empty($this->options[$op]) ? t($op) : $this->options[$op];

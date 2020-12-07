@@ -1,0 +1,24 @@
+[PublishContentWebTestBase]
+name = PublishContentWebTestBase
+description = PublishContentWebTestBase
+group = publishcontent_test
+file = publishcontent.test
+
+[PublishContentTabTests]
+name = Publish Content: Tab Tests
+description = Executes test suite for Publish Content module with the tab method.
+group = Publish Content
+file = publishcontent.test
+
+[PublishContentButtonTests]
+name = Publish Content: Button Tests
+description = Executes test suite for Publish Content module with the button method.
+group = Publish Content
+file = publishcontent.test
+
+[PublishContentCheckboxTests]
+name = Publish Content: Checkbox Tests
+description = Executes test suite for Publish Content module with the checkbox method.
+group = Publish Content
+file = publishcontent.test
+

@@ -1,15 +1,44 @@
 <?php
-
 /**
  * @file
  * Install file for the publish content module.
  */
 
+
 /**
- * Copy tabs preference into new variable called publishcontent_method.
+ * Implements hook_update_last_removed().
  */
-function publishcontent_update_7001() {
-  $new_method = variable_get('publishcontent_tabs', TRUE) ? PUBLISHCONTENT_METHOD_TABS : PUBLISHCONTENT_METHOD_NONE;
-  variable_set('publishcontent_method', $new_method);
-  variable_del('publishcontent_tabs');
+function publishcontent_update_last_removed() {
+  return 7001;
+}
+
+
+/**
+ * Convert Publish Content variables to config settings.
+ */
+function publishcontent_update_1000() {
+  $config = config('publishcontent.settings');
+
+  $config->set('publishcontent_method',
+    update_variable_get('publishcontent_method', 3));
+
+  $types = node_type_get_names();
+  foreach ($types as $type => $name) {
+    $var = 'publishcontent_' . $type;
+    $config->set($var, update_variable_get($var, 0));
+    update_variable_del($var);
+  }
+
+  $config->save();
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function publishcontent_uninstall() {
+
+  // TBD, this shouldn't be needed because config_uninstall_config() but
+  // the file seems to be left behind when we uninstall.
+  config('publishcontent.settings')->delete();
 }

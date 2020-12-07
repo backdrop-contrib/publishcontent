@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Contains page callbacks for publishcontent
@@ -9,11 +8,13 @@
  * Administration settings form.
  */
 function publishcontent_config_form($form, &$form_state) {
+  $config = config('publishcontent.settings');
+  $form['#config'] = 'publishcontent.settings';
   $form['publishcontent_method'] = array(
     '#type' => 'radios',
     '#title' => t('Quick publish method'),
-    '#default_value' => variable_get('publishcontent_method', PUBLISHCONTENT_METHOD_TABS),
-    '#description' => t('Choose the quick links method. With no quick links, the published checkbox will still appear on the node edit form. Note that a Drupal cache clear occurs after changing this.'),
+    '#default_value' => $config->get('publishcontent_method'),
+    '#description' => t('Choose the quick links method. With no quick links, the published checkbox will still appear on the node edit form. Note that a Backdrop cache clear occurs after changing this.'),
     '#options' => array(
       PUBLISHCONTENT_METHOD_NONE => t('None.'),
       PUBLISHCONTENT_METHOD_ACTION_LINKS => t('Action links on node view.'),
@@ -36,7 +37,7 @@ function publishcontent_config_form($form, &$form_state) {
     $form['content_types_fieldset']['publishcontent_' . $machine_name] = array(
       '#type' => 'checkbox',
       '#title' => $human_name,
-      '#default_value' => variable_get('publishcontent_' . $machine_name, FALSE),
+      '#default_value' => $config->get('publishcontent_' . $machine_name),
     );
   }
 
@@ -47,14 +48,17 @@ function publishcontent_config_form($form, &$form_state) {
   return $form;
 }
 
+
 /**
  * Form submission function.
  *
  * This retains a note about the current quick publish method.
  */
 function publishcontent_config_form_pre_submit(&$form, &$form_submit) {
-  drupal_static('publishcontent_config_form_mode', variable_get('publishcontent_method', PUBLISHCONTENT_METHOD_TABS));
+  backdrop_static('publishcontent_config_form_mode',
+    config_get('publishcontent.settings', 'publishcontent_method'));
 }
+
 
 /**
  * Form submission function.
@@ -63,11 +67,11 @@ function publishcontent_config_form_pre_submit(&$form, &$form_submit) {
  * method changed then the site cache is flushed.
  */
 function publishcontent_config_form_post_submit(&$form, &$form_submit) {
-  $old_mode = &drupal_static('publishcontent_config_form_mode');
+  $old_mode = &backdrop_static('publishcontent_config_form_mode');
 
   // If the quick access mode changed then flush all caches.
   if ($old_mode != $form_submit['values']['publishcontent_method']) {
-    drupal_flush_all_caches();
-    drupal_set_message('All site caches have been cleared.');
+    backdrop_flush_all_caches();
+    backdrop_set_message(t('All site caches have been cleared.'));
   }
 }

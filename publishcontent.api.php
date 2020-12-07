@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Describe hooks provided by the publishcontent module.
@@ -47,6 +46,7 @@ function hook_publishcontent_publish_access($node, $account) {
   // allow it then the user will be denied.
   return PUBLISHCONTENT_ACCESS_IGNORE;
 }
+
 
 /**
  * Allow other modules the ability to modify access to the unpublish controls.

@@ -50,11 +50,19 @@ function publishcontent_test_nodes() {
         continue;
       }
 
-      $output .= '<li>' . $node->title . ' ' . l("{$op}-{$node->nid}", "node/{$node->nid}/{$op}/" . drupal_get_token(), array('query' => drupal_get_destination())) . '</li>';
+      $output .= '<li>' . $node->title . ' ' . l("{$op}-{$node->nid}", "node/{$node->nid}/{$op}/" . backdrop_get_token(), array('query' => backdrop_get_destination())) . '</li>';
     }
 
     $output .= '</ul>';
   }
 
   return $output;
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function publishcontent_test_autoload_info() {
+  return array(
+  );
 }
