@@ -6,10 +6,10 @@
  */
 
 /**
- * We test to ensure we are not messing up with the default Drupal
+ * We test to ensure we are not messing up with the default Backdrop
  * access for view node  i.e. a owner of a node can view it even if unpublished.
  */
-abstract class PublishContentWebTestBase extends DrupalWebTestCase {
+abstract class PublishContentWebTestBase extends BackdropWebTestCase {
 
   /**
    * Perform a GET operation on a node.
@@ -159,7 +159,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
   public function assertCanPublishFromLinksPage($node) {
     $status = $node->status;
     $this->setNodeStatus($node, 0, 'Start test with an unpublished node');
-    $this->drupalGet('publishcontent-links');
+    $this->backdropGet('publishcontent-links');
     $this->assertResponse(200);
     $this->assertLink('publish-' . $node->nid);
     $this->assertNoLink('unpublish-' . $node->nid);
@@ -167,7 +167,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
     $this->assertResponse(200);
 
     // Submit the confirmation form.
-    $this->drupalPost($this->url, array(), 'Confirm');
+    $this->backdropPost($this->url, array(), 'Confirm');
     $this->assertResponse(200);
 
     $this->assertNodeStatus($node->nid, 1);
@@ -180,7 +180,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
   public function assertCannotPublishFromLinksPage($node) {
     $status = $node->status;
     $this->setNodeStatus($node, 0, 'Start test with an unpublished node');
-    $this->drupalGet('publishcontent-links');
+    $this->backdropGet('publishcontent-links');
     $this->assertResponse(200);
     $this->assertNoLink('publish-' . $node->nid);
     $this->assertNoLink('unpublish-' . $node->nid);
@@ -193,7 +193,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
   public function assertCanUnpublishFromLinksPage($node) {
     $status = $node->status;
     $this->setNodeStatus($node, 1, 'Start test with a published node');
-    $this->drupalGet('publishcontent-links');
+    $this->backdropGet('publishcontent-links');
     $this->assertResponse(200);
     $this->assertLink('unpublish-' . $node->nid);
     $this->assertNoLink('publish-' . $node->nid);
@@ -201,7 +201,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
     $this->assertResponse(200);
 
     // Submit the confirmation form.
-    $this->drupalPost($this->url, array(), 'Confirm');
+    $this->backdropPost($this->url, array(), 'Confirm');
     $this->assertResponse(200);
 
     $this->assertNodeStatus($node->nid, 0);
@@ -214,7 +214,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
   public function assertCannotUnpublishFromLinksPage($node) {
     $status = $node->status;
     $this->setNodeStatus($node, 1, 'Start test with a published node');
-    $this->drupalGet('publishcontent-links');
+    $this->backdropGet('publishcontent-links');
     $this->assertResponse(200);
     $this->assertNoLink('publish-' . $node->nid);
     $this->assertNoLink('unpublish-' . $node->nid);
@@ -225,10 +225,10 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
    * Check no publish permission by node owner.
    */
   public function testNoPublishPermissionByOwner() {
-    $web_user = $this->drupalCreateUser(array('access content'));
-    $this->drupalLogin($web_user);
+    $web_user = $this->backdropCreateUser(array('access content'));
+    $this->backdropLogin($web_user);
 
-    $node = $this->drupalCreateNode(
+    $node = $this->backdropCreateNode(
       array(
         'type' => 'page',
         'uid' => $web_user->uid,
@@ -244,10 +244,10 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
   }
 
   /**
-   * Check publishcontent module does not interfere with the normal Drupal.
+   * Check publishcontent module does not interfere with the normal Backdrop.
    */
   public function testNoPermissionAndNotOwner() {
-    $node = $this->drupalCreateNode(
+    $node = $this->backdropCreateNode(
       array(
         'type' => 'page',
         'uid' => 0,
@@ -255,7 +255,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalLogin($this->drupalCreateUser(array('access content')));
+    $this->backdropLogin($this->backdropCreateUser(array('access content')));
 
     $this->assertCurrentUserCannotPublish($node);
     $this->assertCurrentUserCannotUnpublish($node);
@@ -271,16 +271,16 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
     $type = 'page';
     $this->enablePublishContentForContentType($type);
 
-    $web_user = $this->drupalCreateUser(array(
+    $web_user = $this->backdropCreateUser(array(
       'access content',
       'publish editable ' . $type . ' content',
       'view own unpublished content',
       'edit own ' . $type . ' content',
     ));
 
-    $this->drupalLogin($web_user);
+    $this->backdropLogin($web_user);
 
-    $node = $this->drupalCreateNode(
+    $node = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => $web_user->uid,
@@ -288,7 +288,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->backdropGet('node/' . $node->nid . '/edit');
     $this->assertResponse(200);
 
     $this->assertCurrentUserCanPublish($node);
@@ -302,15 +302,15 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
     $type = 'page';
     $this->enablePublishContentForContentType($type);
 
-    $web_user = $this->drupalCreateUser(array(
+    $web_user = $this->backdropCreateUser(array(
       'access content',
       'unpublish any ' . $type . ' content',
       'view own unpublished content',
       'edit own ' . $type . ' content',
     ));
-    $this->drupalLogin($web_user);
+    $this->backdropLogin($web_user);
 
-    $node = $this->drupalCreateNode(
+    $node = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => $web_user->uid,
@@ -329,14 +329,14 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
     $type = 'page';
     $this->enablePublishContentForContentType($type);
 
-    $web_user_1 = $this->drupalCreateUser(array(
+    $web_user_1 = $this->backdropCreateUser(array(
       'access content',
       'view own unpublished content',
       'edit any ' . $type . ' content',
       'publish any content',
     ));
 
-    $node1 = $this->drupalCreateNode(
+    $node1 = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => $web_user_1->uid,
@@ -344,18 +344,18 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalLogin($web_user_1);
+    $this->backdropLogin($web_user_1);
     $this->assertCurrentUserCanPublish($node1);
     $this->assertCurrentUserCannotUnpublish($node1);
 
-    $web_user_2 = $this->drupalCreateUser(array(
+    $web_user_2 = $this->backdropCreateUser(array(
       'access content',
       'view own unpublished content',
       'edit any ' . $type . ' content',
       'unpublish any content',
     ));
 
-    $node2 = $this->drupalCreateNode(
+    $node2 = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => $web_user_2->uid,
@@ -363,11 +363,11 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalLogin($web_user_2);
+    $this->backdropLogin($web_user_2);
     $this->assertCurrentUserCannotPublish($node2);
     $this->assertCurrentUserCanUnpublish($node2);
 
-    $web_user_3 = $this->drupalCreateUser(array(
+    $web_user_3 = $this->backdropCreateUser(array(
       'access content',
       'view own unpublished content',
       'edit any ' . $type . ' content',
@@ -375,7 +375,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       'unpublish any content',
     ));
 
-    $node3 = $this->drupalCreateNode(
+    $node3 = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => $web_user_3->uid,
@@ -383,7 +383,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalLogin($web_user_3);
+    $this->backdropLogin($web_user_3);
     $this->assertCurrentUserCanPublish($node3);
     $this->assertCurrentUserCanUnpublish($node3);
   }
@@ -393,47 +393,47 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
    */
   public function testBasicPublishCallback() {
     $type = 'page';
-    $this->enablePublishContentForContentType(array($type, 'article'));
+    $this->enablePublishContentForContentType(array($type, 'post'));
 
-    $web_user_1 = $this->drupalCreateUser(array(
+    $web_user_1 = $this->backdropCreateUser(array(
       'access content',
       'publish any content',
     ));
 
-    $web_user_2 = $this->drupalCreateUser(array(
+    $web_user_2 = $this->backdropCreateUser(array(
       'access content',
       'unpublish any content',
     ));
 
-    $web_user_3 = $this->drupalCreateUser(array(
+    $web_user_3 = $this->backdropCreateUser(array(
       'access content',
       'publish any content',
       'unpublish any content',
     ));
 
-    $web_user_4 = $this->drupalCreateUser(array(
+    $web_user_4 = $this->backdropCreateUser(array(
       'access content',
       'publish any ' . $type . ' content',
     ));
 
-    $web_user_5 = $this->drupalCreateUser(array(
+    $web_user_5 = $this->backdropCreateUser(array(
       'access content',
       'unpublish any ' . $type . ' content',
     ));
 
-    $web_user_6 = $this->drupalCreateUser(array(
+    $web_user_6 = $this->backdropCreateUser(array(
       'access content',
       'publish any ' . $type . ' content',
       'unpublish any ' . $type . ' content',
     ));
 
-    $web_user_7 = $this->drupalCreateUser(array(
+    $web_user_7 = $this->backdropCreateUser(array(
       'access content',
-      'publish any article content',
-      'unpublish any article content',
+      'publish any post content',
+      'unpublish any post content',
     ));
 
-    $node = $this->drupalCreateNode(
+    $node = $this->backdropCreateNode(
       array(
         'type' => $type,
         'uid' => 1,
@@ -441,33 +441,33 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
       )
     );
 
-    $this->drupalLogin($web_user_1);
+    $this->backdropLogin($web_user_1);
     $this->assertCanPublishFromLinksPage($node, 'Someone with publish any content can publish page node');
     $this->assertCannotUnpublishFromLinksPage($node, 'Someone with publish any content cannot unpublish page node');
 
-    $this->drupalLogin($web_user_2);
+    $this->backdropLogin($web_user_2);
     $this->assertCannotPublishFromLinksPage($node, 'Someone with unpublish any content cannot publish page node');
     $this->assertCanUnpublishFromLinksPage($node, 'Someone with unpublish any content can unpublish page node');
 
-    $this->drupalLogin($web_user_3);
+    $this->backdropLogin($web_user_3);
     $this->assertCanPublishFromLinksPage($node, 'Someone with publish and unpublish any content can publish page node');
     $this->assertCanUnpublishFromLinksPage($node, 'Someone with publish and unpublish any content can unpublish page node');
 
-    $this->drupalLogin($web_user_4);
+    $this->backdropLogin($web_user_4);
     $this->assertCanPublishFromLinksPage($node, 'Someone with publish any page nodes can publish a page node');
     $this->assertCannotUnpublishFromLinksPage($node, 'Someone with publish any page nodes cannot unpublish page node');
 
-    $this->drupalLogin($web_user_5);
+    $this->backdropLogin($web_user_5);
     $this->assertCannotPublishFromLinksPage($node, 'Someone with unpublish any page node cannot publish a page node');
     $this->assertCanUnpublishFromLinksPage($node, 'Someone with unpublish any page node can unpublish a page node');
 
-    $this->drupalLogin($web_user_6);
+    $this->backdropLogin($web_user_6);
     $this->assertCanPublishFromLinksPage($node, 'Someone with publish and unpublish any page node can publish a page node');
     $this->assertCanUnpublishFromLinksPage($node, 'Someone with publish and unpublish any page node can unpublish a page node');
 
-    $this->drupalLogin($web_user_7);
-    $this->assertCannotPublishFromLinksPage($node, 'Someone with publish any article content cannot publish page content');
-    $this->assertCannotUnpublishFromLinksPage($node, 'Someone with unpublish any article content cannot unpublish page content');
+    $this->backdropLogin($web_user_7);
+    $this->assertCannotPublishFromLinksPage($node, 'Someone with publish any post content cannot publish page content');
+    $this->assertCannotUnpublishFromLinksPage($node, 'Someone with unpublish any post content cannot unpublish page content');
   }
 
 }
@@ -478,7 +478,7 @@ abstract class PublishContentWebTestBase extends DrupalWebTestCase {
 class PublishContentTabTests extends PublishContentWebTestBase {
 
   /**
-   * Drupal SimpleTest method: return metadata about the test.
+   * Backdrop SimpleTest method: return metadata about the test.
    */
   public static function getInfo() {
     return array(
@@ -493,7 +493,9 @@ class PublishContentTabTests extends PublishContentWebTestBase {
    */
   public function setUp() {
     parent::setUp('publishcontent', 'publishcontent_test');
-    variable_set('publishcontent_method', PUBLISHCONTENT_METHOD_TABS);
+    config_set('publishcontent.settings', 'publishcontent_method', PUBLISHCONTENT_METHOD_TABS);
+    config_set('publishcontent.settings', 'publishcontent_page', 1);
+    config_set('publishcontent.settings', 'publishcontent_post', 1);
   }
 
   /**
@@ -520,10 +522,10 @@ class PublishContentTabTests extends PublishContentWebTestBase {
       $tab_link_text = ucfirst($op);
 
       // Visit the edit page first to generate the tab.
-      $this->drupalGet("node/{$nid}");
+      $this->backdropGet("node/{$nid}");
       $view_response = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
       if ($view_response != 200) {
-        $msg .= t('Could not view the node. Response code: @response', array('@response' => $view_response));
+        $msg .= ' ' . t('Could not view the node. Response code: @response', array('@response' => $view_response));
         $this->assert($expected_response == $view_response, $msg);
         return;
       }
@@ -532,7 +534,7 @@ class PublishContentTabTests extends PublishContentWebTestBase {
       $links = $this->xpath('//a[normalize-space(text())=:label]', array(':label' => $tab_link_text));
       if (!isset($links[0])) {
         // No tab.
-        $msg .= t('Could not find a tab called @tab', array('@tab' => $tab_link_text));
+        $msg .= ' ' . t('Could not find a tab called @tab', array('@tab' => $tab_link_text));
         $this->assert($expected_response != 200, $msg);
         return;
       }
@@ -541,7 +543,7 @@ class PublishContentTabTests extends PublishContentWebTestBase {
       $this->clickLink($tab_link_text);
 
       // Submit the confirmation form.
-      $this->drupalPost($this->url, array(), 'Confirm');
+      $this->backdropPost($this->url, array(), 'Confirm');
       $this->assertResponse(200);
 
       $node = node_load($nid);
@@ -557,7 +559,7 @@ class PublishContentTabTests extends PublishContentWebTestBase {
     }
     else {
       $url = $op == 'view' ? "node/{$nid}" : "node/$nid/$op";
-      $this->drupalGet($url);
+      $this->backdropGet($url);
     }
 
     $this->assertResponse($expected_response, $msg);
@@ -571,7 +573,7 @@ class PublishContentTabTests extends PublishContentWebTestBase {
 class PublishContentButtonTests extends PublishContentWebTestBase {
 
   /**
-   * Drupal SimpleTest method: return metadata about the test.
+   * Backdrop SimpleTest method: return metadata about the test.
    */
   public static function getInfo() {
     return array(
@@ -586,7 +588,9 @@ class PublishContentButtonTests extends PublishContentWebTestBase {
    */
   public function setUp() {
     parent::setUp('publishcontent', 'publishcontent_test');
-    variable_set('publishcontent_method', PUBLISHCONTENT_METHOD_BUTTON);
+    config_set('publishcontent.settings', 'publishcontent_method', PUBLISHCONTENT_METHOD_BUTTON);
+    config_set('publishcontent.settings', 'publishcontent_page', 1);
+    config_set('publishcontent.settings', 'publishcontent_post', 1);
   }
 
   /**
@@ -613,7 +617,7 @@ class PublishContentButtonTests extends PublishContentWebTestBase {
       $button_text = t(ucfirst($op));
 
       // Visit the edit page first to generate the tab.
-      $this->drupalGet("node/{$nid}/edit");
+      $this->backdropGet("node/{$nid}/edit");
       $view_response = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
       if ($view_response != 200) {
         $msg .= t('Could not view the node. Response code: @response', array('@response' => $view_response));
@@ -631,11 +635,11 @@ class PublishContentButtonTests extends PublishContentWebTestBase {
       }
 
       // Submit the form.
-      $this->drupalPost("node/{$nid}/edit", array(), $button_text);
+      $this->backdropPost("node/{$nid}/edit", array(), $button_text);
     }
     else {
       $url = $op == 'view' ? "node/{$nid}" : "node/$nid/$op";
-      $this->drupalGet($url);
+      $this->backdropGet($url);
     }
 
     $this->assertResponse($expected_response, $msg);
@@ -643,17 +647,17 @@ class PublishContentButtonTests extends PublishContentWebTestBase {
 }
 
 /**
- * Test permissions with the tab method.
+ * Test permissions with no method selected.
  */
-class PublishContentCheckboxTests extends PublishContentWebTestBase {
+class PublishContentNoMethodTests extends PublishContentWebTestBase {
 
   /**
-   * Drupal SimpleTest method: return metadata about the test.
+   * Backdrop SimpleTest method: return metadata about the test.
    */
   public static function getInfo() {
     return array(
-      'name'  => t('Publish Content: Checkbox Tests'),
-      'description'  => t('Executes test suite for Publish Content module with the checkbox method.'),
+      'name'  => t('Publish Content: No Method Tests'),
+      'description'  => t('Executes test suite for Publish Content module with the "None" method.'),
       'group' => t('Publish Content'),
     );
   }
@@ -663,7 +667,9 @@ class PublishContentCheckboxTests extends PublishContentWebTestBase {
    */
   public function setUp() {
     parent::setUp('publishcontent', 'publishcontent_test');
-    variable_set('publishcontent_method', PUBLISHCONTENT_METHOD_NONE);
+    config_set('publishcontent.settings', 'publishcontent_method', PUBLISHCONTENT_METHOD_NONE);
+    config_set('publishcontent.settings', 'publishcontent_page', 1);
+    config_set('publishcontent.settings', 'publishcontent_post', 1);
   }
 
   /**
@@ -688,8 +694,8 @@ class PublishContentCheckboxTests extends PublishContentWebTestBase {
   public function assertNodeOperationAccess($nid, $op, $expected_response, $msg = '') {
     if (in_array($op, array('publish', 'unpublish'))) {
 
-      // Visit the edit page first to check for the published checkbox.
-      $this->drupalGet("node/{$nid}/edit");
+      // Visit the edit page first to check for the"Published" radio button.
+      $this->backdropGet("node/{$nid}/edit");
       $view_response = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
       if ($view_response != 200) {
         $msg .= t('Could not edit the node. Response code: @response', array('@response' => $view_response));
@@ -697,26 +703,25 @@ class PublishContentCheckboxTests extends PublishContentWebTestBase {
         return;
       }
 
-      // Check the checkbox exists.
-      $elements = $this->xpath('//input[@id=:id]', array(':id' => 'edit-status'));
+     // Check that the "Published" radio button exists in the "Publishing options."
+      $elements = $this->xpath('//input[@id=:id]', array(':id' => 'edit-status-1'));
       if (!isset($elements[0])) {
-        // No checkboxes.
-        $msg .= t('Published status checkbox is not accessible.');
+        $msg .= ' ' . t('"Publishing options" radio buttons not accessible.');
         $this->assert($expected_response != 200, $msg);
         return;
       }
 
-      // At this point the response code for checkboxes is irrelevant, if
-      // they can access the edit page and see the checkbox, they can edit it.
+      // At this point the response code is irrelevant; if they can access the
+      // edit page and see the radio buttons, they can edit it.
       $expected_response = 200;
 
-      // Tick or untick the published checkbox and submit the form.
-      $edit_status = ($op == 'publish');
-      $this->drupalPost("node/{$nid}/edit", array('status' => $edit_status), t('Save'));
+      // Select the appropriate radio button and submit the form.
+      $edit_status = ($op == 'publish') ? 1 : 0;
+      $this->backdropPost("node/{$nid}/edit", array('status' => $edit_status), t('Save'));
     }
     else {
       $url = $op == 'view' ? "node/{$nid}" : "node/$nid/$op";
-      $this->drupalGet($url);
+      $this->backdropGet($url);
     }
 
     $this->assertResponse($expected_response, $msg);
@@ -729,7 +734,7 @@ class PublishContentCheckboxTests extends PublishContentWebTestBase {
     $type = 'page';
     $this->enablePublishContentForContentType($type);
 
-    $web_user_1 = $this->drupalCreateUser(array(
+    $web_user_1 = $this->backdropCreateUser(array(
       'access content',
       'view own unpublished content',
       'create ' . $type . ' content',
@@ -737,9 +742,9 @@ class PublishContentCheckboxTests extends PublishContentWebTestBase {
       'unpublish editable content',
     ));
 
-    $this->drupalLogin($web_user_1);
-    $this->drupalGet('node/add/' . $type);
+    $this->backdropLogin($web_user_1);
+    $this->backdropGet('node/add/' . $type);
     $this->assertResponse(200);
-    $this->assertFieldChecked('edit-status', t('Ensure the publish checkbox is available.'));
+    $this->assertFieldChecked('edit-status-1', t('Ensure the "Published" radio button is available.'));
   }
 }

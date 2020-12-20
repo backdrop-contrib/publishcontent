@@ -58,11 +58,3 @@ function publishcontent_test_nodes() {
 
   return $output;
 }
-
-/**
- * Implements hook_autoload_info().
- */
-function publishcontent_test_autoload_info() {
-  return array(
-  );
-}

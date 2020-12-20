@@ -70,6 +70,7 @@ function publishcontent_config_info() {
     'label' => t('Publish Content settings'),
     'group' => t('Configuration'),
   );
+  return $prefixes;
 }
 
 
@@ -284,6 +285,7 @@ function publishcontent_permission() {
       );
     }
   }
+
   return $perms;
 }
 
@@ -293,8 +295,8 @@ function publishcontent_permission() {
  */
 function _publishcontent_get_message($nid, $title, $status) {
   return ($status) ?
-    t('"@title" [@nid] has been published', array('@title' => $title, '@nid' => $nid)) :
-    t('"@title" [@nid] has been unpublished', array('@title' => $title, '@nid' => $nid));
+    t('"@title" [node @nid] has been published', array('@title' => $title, '@nid' => $nid)) :
+    t('"@title" [node @nid] has been unpublished', array('@title' => $title, '@nid' => $nid));
 }
 
 
@@ -305,7 +307,7 @@ function _publishcontent_get_message($nid, $title, $status) {
  * @param array $form_state
  * @param $node
  * @param string $toggle_title
- *   Title of the button e.g. Publish or Unpublish
+ *   Title of the button, for example, Publish or Unpublish
  *
  * @return array
  */

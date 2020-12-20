@@ -16,10 +16,10 @@ function publishcontent_config_form($form, &$form_state) {
     '#default_value' => $config->get('publishcontent_method'),
     '#description' => t('Choose the quick links method. With no quick links, the published checkbox will still appear on the node edit form. Note that a Backdrop cache clear occurs after changing this.'),
     '#options' => array(
-      PUBLISHCONTENT_METHOD_NONE => t('None.'),
-      PUBLISHCONTENT_METHOD_ACTION_LINKS => t('Action links on node view.'),
-      PUBLISHCONTENT_METHOD_BUTTON => t('Button.'),
-      PUBLISHCONTENT_METHOD_TABS => t('Tabs.'),
+      PUBLISHCONTENT_METHOD_NONE => t('None'),
+      PUBLISHCONTENT_METHOD_ACTION_LINKS => t('Action links on node view'),
+      PUBLISHCONTENT_METHOD_BUTTON => t('Button'),
+      PUBLISHCONTENT_METHOD_TABS => t('Tabs'),
     ),
   );
 

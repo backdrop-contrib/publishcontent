@@ -28,17 +28,5 @@ function publishcontent_update_1000() {
     $config->set($var, update_variable_get($var, 0));
     update_variable_del($var);
   }
-
   $config->save();
-}
-
-
-/**
- * Implements hook_uninstall().
- */
-function publishcontent_uninstall() {
-
-  // TBD, this shouldn't be needed because config_uninstall_config() but
-  // the file seems to be left behind when we uninstall.
-  config('publishcontent.settings')->delete();
 }
