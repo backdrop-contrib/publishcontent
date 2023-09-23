@@ -24,7 +24,7 @@ function publishcontent_menu() {
   $menu_type = _publishcontent_get_menutype();
 
   $items['admin/config/content/publishcontent'] = array(
-    'title' => 'Publish content settings',
+    'title' => 'Publish Content',
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('publishcontent_config_form'),
     'access callback' => 'user_access',
